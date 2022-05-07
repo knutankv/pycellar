@@ -10,12 +10,13 @@ import pandas as pd
 from pycellar import winelib
 from pycellar.interface import create_dash_app
 
-username = input('Username: ')
-password = getpass('Password: ')
-# password = 'minvin'
-# username = 'knut.a.kvale@gmail.com'
+# username = input('Username: ')
+# password = getpass('Password: ')
 
-image_path = 'C:/Users/knutankv/git-repos/pycellar/cellarimage.png'
+username = 'knut.a.kvale@gmail.com'
+password = 'minvin'
+
+image_path = 'cellarimage.png'
 
 bin_dict = dict(
     A1=[183, 484],
@@ -54,4 +55,4 @@ app = create_dash_app(cellar_dict, image_path=image_path, bin_dict=bin_dict)
 server = app.server
 
 
-app.run_server(port=8080, host='192.168.100.3', debug=False)
+app.run_server(debug=False)
