@@ -62,6 +62,11 @@
        id="linearGradient9521"
        xlink:href="#linearGradient9515"
        inkscape:collect="always" />
+    <inkscape:path-effect
+       effect="spiro"
+       id="path-effect849"
+       is_visible="true"
+       lpeversion="1" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -70,17 +75,17 @@
      borderopacity="1.0"
      inkscape:pageopacity="1"
      inkscape:pageshadow="2"
-     inkscape:zoom="0.35"
-     inkscape:cx="370.8452"
-     inkscape:cy="243.16308"
+     inkscape:zoom="0.7"
+     inkscape:cx="404.05613"
+     inkscape:cy="446.49521"
      inkscape:document-units="mm"
      inkscape:current-layer="g847"
      inkscape:document-rotation="0"
      showgrid="false"
      inkscape:window-width="1267"
      inkscape:window-height="961"
-     inkscape:window-x="52"
-     inkscape:window-y="0"
+     inkscape:window-x="644"
+     inkscape:window-y="47"
      inkscape:window-maximized="0"
      fit-margin-top="0"
      fit-margin-left="0"
@@ -94,7 +99,7 @@
         <dc:format>image/svg+xml</dc:format>
         <dc:type
            rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
-        <dc:title></dc:title>
+        <dc:title />
       </cc:Work>
     </rdf:RDF>
   </metadata>
