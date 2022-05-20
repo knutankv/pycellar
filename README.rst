@@ -21,7 +21,7 @@ or install directly from Github.
 
 .. code-block::
 
-   pip install git+https://www.github.com/knutankv/koma.git@master
+   pip install git+https://www.github.com/knutankv/pycellar.git@master
 
 
 Thereafter, import the package modules, exemplified for the `winelib´ module, as follows:
