@@ -3,14 +3,10 @@ from dash import dash_table
 from dash.dependencies import Output, Input, State
 import dash_core_components as dcc
 import dash_html_components as html
-import plotly.express as px
-import pandas as pd
-import plotly.graph_objs as go
-from skimage import io
+
 import numpy as np
 from pycellar import winelib, lights
 from datetime import date
-import random
 
 external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
 
