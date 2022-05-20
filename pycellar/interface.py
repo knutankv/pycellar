@@ -98,20 +98,20 @@ def create_dash_app(cellar, webhook_settings=None, icon_paths=None):
     app.layout = html.Div(className='main', children=
         [html.Div(className='filters', children=[
                 html.Div(id='winetypes', children=[
-                    html.Img(id='red_type',className='icon', src=app.get_asset_url(icon_paths['red'])),
-                    html.Img(id='white_type', className='icon', src=app.get_asset_url(icon_paths['white'])),
-                    html.Img(id='rose_type',  className='icon', src=app.get_asset_url(icon_paths['rose'])),
-                    html.Img(id='sparkling_type', className='icon', src=app.get_asset_url(icon_paths['sparkling'])),
-                    html.Img(id='dessert_type', className='icon', src=app.get_asset_url(icon_paths['dessert']))
+                    html.Img(id='red_type',className='icon', src=dash.get_asset_url(icon_paths['red'])),
+                    html.Img(id='white_type', className='icon', src=dash.get_asset_url(icon_paths['white'])),
+                    html.Img(id='rose_type',  className='icon', src=dash.get_asset_url(icon_paths['rose'])),
+                    html.Img(id='sparkling_type', className='icon', src=dash.get_asset_url(icon_paths['sparkling'])),
+                    html.Img(id='dessert_type', className='icon', src=dash.get_asset_url(icon_paths['dessert']))
                 ]),
                
                 dcc.RangeSlider(min=2000, max=date.today().year, value=[2000, 2025],
                                 id='vintages', tooltip={"placement": "bottom", "always_visible": True}),
-                html.Img(id='ok_consume',className='icon', src=app.get_asset_url(icon_paths['ok_consume'])),
-                # html.Img(id='random_pick',className='icon', src=app.get_asset_url(icon_paths['random'])),
+                html.Img(id='ok_consume',className='icon', src=dash.get_asset_url(icon_paths['ok_consume'])),
+                # html.Img(id='random_pick',className='icon', src=dash.get_asset_url(icon_paths['random'])),
                 
                 html.Div(className='iconed_list', children=[
-                    html.Img(className='icon', src=app.get_asset_url(icon_paths['map_img'])),
+                    html.Img(className='icon', src=dash.get_asset_url(icon_paths['map_img'])),
                     dcc.Dropdown(
                         options=countries_dashdict,
                         id='countries', 
@@ -148,9 +148,9 @@ def create_dash_app(cellar, webhook_settings=None, icon_paths=None):
                     )]),
             html.Br(),
             html.Div(id='light_controls', children=[
-                html.Img(id='lights_off',className='lights-icon', src=app.get_asset_url(icon_paths['lights_off'])),
-                html.Img(id='lights1', className='lights-icon', src=app.get_asset_url(icon_paths['lights1'])),
-                html.Img(id='lights2',  className='lights-icon', src=app.get_asset_url(icon_paths['lights2'])),
+                html.Img(id='lights_off',className='lights-icon', src=dash.get_asset_url(icon_paths['lights_off'])),
+                html.Img(id='lights1', className='lights-icon', src=dash.get_asset_url(icon_paths['lights1'])),
+                html.Img(id='lights2',  className='lights-icon', src=dash.get_asset_url(icon_paths['lights2'])),
              
             ])
         ])
