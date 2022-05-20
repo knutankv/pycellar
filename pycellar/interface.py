@@ -55,7 +55,9 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
         
     
     if stylesheets is None:
-        stylesheets = external_stylesheets*1
+        stylesheets = external_stylesheets*1'
+    
+    stylesheets = [app.get_asset_url(c) for c in stylesheets]
 
     app = dash.Dash(__name__, external_stylesheets=stylesheets, assets_folder=assets_folder)
     app.css.config.serve_locally = True
