@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="pycellar",
-    version="0.1.0",
+    version="0.1.1",
     author="Knut Andreas Kvåle",
     author_email="knut.a.kvale@gmail.com",
     description="Python wine cellar library management",
@@ -13,7 +13,9 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/knutankv/pycellar",
     packages=setuptools.find_packages(),
-    install_requires=['numpy', 'pandas'],
+    install_requires=['numpy', 'pandas', 'cellartracker',
+                      'getpass', 're', 'datetime', 'functools',
+                      'requests'],                      
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
