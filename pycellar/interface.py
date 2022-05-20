@@ -7,15 +7,13 @@ import dash_html_components as html
 import numpy as np
 from pycellar import winelib, lights
 from datetime import date
-
-external_stylesheets = ['https://codepen.io/chriddyp/pen/bWLwgP.css']
+from flask import send_from_directory
+import os
 
 def get_wine_types_from_dict(wine_types):
     return [wine_type for wine_type in wine_types if wine_types[wine_type]]
 
-def create_dash_app(cellar, image_path=None, bin_dict=None, 
-                    webhook_settings=None, stylesheets=None, 
-                    assets_folder="assets", logo_path=None, icon_paths=None):
+def create_dash_app(cellar, webhook_settings=None, icon_paths=None):
     
     def filter_cellar(filter_dict):
         def all_filters(wine):    
@@ -52,12 +50,8 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
             return data, columns
         else: 
             return data
-        
     
-    if stylesheets is None:
-        stylesheets = external_stylesheets*1
-    
-    app = dash.Dash(__name__, external_stylesheets=stylesheets, assets_folder=assets_folder)
+    app = dash.Dash(__name__)
     app.css.config.serve_locally = True
     app.scripts.config.serve_locally = True
     
@@ -104,7 +98,7 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
     app.layout = html.Div(className='main', children=
         [html.Div(className='filters', children=[
                 html.Div(id='winetypes', children=[
-                    html.Img(id='red_type',className='icon', src=icon_paths['red']),
+                    html.Img(id='red_type',className='icon', src=app.get_asset_url(icon_paths['red'])),
                     html.Img(id='white_type', className='icon', src=app.get_asset_url(icon_paths['white'])),
                     html.Img(id='rose_type',  className='icon', src=app.get_asset_url(icon_paths['rose'])),
                     html.Img(id='sparkling_type', className='icon', src=app.get_asset_url(icon_paths['sparkling'])),
@@ -124,7 +118,7 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
                         multi=False,
                         value=None)]),
                 html.Div(className='iconed_list', children=[  
-                    html.Img(className='icon', src=app.get_asset_url(icon_paths['grapes'])),
+                    html.Img(className='icon', src=icon_paths['grapes']),
                     dcc.Dropdown(
                         options=varietals_dashdict,
                         id='varietals', 
@@ -219,21 +213,7 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
         scene_activator('reset_cellar')
 
         return data, *styles, None
-
-    # @app.callback(
-    # Output("random_pick", "style"),
-    # Input("random_pick", "n_clicks")
-    # )
     
-    # def start(n):
-    #     options = ['C1', 'C2', 'C3', 'A1', 'A2', 'A3', 'B1', 'B2', 'B3',
-    #                'D1', 'D2', 'D3', 'E1', 'E2', 'E3']
-        
-    #     sel_bin = random.choice(options)
-    #     scene_activator_random(sel_bin) 
-        
-    #     return None
- 
 
     @app.callback(
     Output("lights_off", "style"),
@@ -284,5 +264,6 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
             ]   
             
         return val
-    
+
+        
     return app
