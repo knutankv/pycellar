@@ -13,8 +13,7 @@ setuptools.setup(
     long_description_content_type="text/markdown",
     url="https://github.com/knutankv/pycellar",
     packages=setuptools.find_packages(),
-    install_requires=['numpy', 'pandas', 'cellartracker',
-                      're'],                      
+    install_requires=['numpy', 'pandas', 'cellartracker'],                      
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
