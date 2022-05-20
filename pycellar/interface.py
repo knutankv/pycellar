@@ -55,10 +55,8 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
         
     
     if stylesheets is None:
-        stylesheets = external_stylesheets*1'
+        stylesheets = external_stylesheets*1
     
-    stylesheets = [app.get_asset_url(c) for c in stylesheets]
-
     app = dash.Dash(__name__, external_stylesheets=stylesheets, assets_folder=assets_folder)
     app.css.config.serve_locally = True
     app.scripts.config.serve_locally = True
@@ -106,7 +104,7 @@ def create_dash_app(cellar, image_path=None, bin_dict=None,
     app.layout = html.Div(className='main', children=
         [html.Div(className='filters', children=[
                 html.Div(id='winetypes', children=[
-                    html.Img(id='red_type',className='icon', src=app.get_asset_url(icon_paths['red'])),
+                    html.Img(id='red_type',className='icon', src=icon_paths['red']),
                     html.Img(id='white_type', className='icon', src=app.get_asset_url(icon_paths['white'])),
                     html.Img(id='rose_type',  className='icon', src=app.get_asset_url(icon_paths['rose'])),
                     html.Img(id='sparkling_type', className='icon', src=app.get_asset_url(icon_paths['sparkling'])),
