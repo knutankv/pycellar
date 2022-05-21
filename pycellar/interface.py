@@ -265,10 +265,4 @@ def create_dash_app(cellar, webhook_settings=None, icon_paths=None):
             
         return val
 
-    # ----------- SERVE CSS --------------
-    @app.server.route('/assets/<recpath>')
-    def static_file(recpath):
-        static_folder = os.path.join(os.getcwd(), 'style.css')
-        return send_from_directory(static_folder, recpath)
-            
     return app

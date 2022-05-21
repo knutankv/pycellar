@@ -1,11 +1,10 @@
 from pycellar.interface import create_dash_app
 import os
 
-username = ...
-password = ...
-homey_id = ...
+username = os.environ['cellartracker_user']
+password = os.environ['cellartracker_pwd']
+homey_id = os.environ['homey_id']
 
-assets_folder = os.getcwd() +'/src'
 cellar_dict = dict(username=username, password=password)
 
 webhook_settings = {'normal': dict(homey_id=homey_id,
@@ -13,11 +12,8 @@ webhook_settings = {'normal': dict(homey_id=homey_id,
                     'random':dict(homey_id=homey_id,
                                           event='finnvin_random')}
 
-stylesheets = ['style.css', 
-               'https://fonts.googleapis.com/css2?family=Playfair+Display&display=swap']
-logo_path = 'cellarlogo.png'
-icon_paths = dict(red='red_dark.png', 
-                   white='white_dark.png', 
+icon_paths = dict(red='red_dark.png',
+                   white='white_dark.png',
                    rose='rose_dark.png', 
                    dessert='dessert_dark.png',
                    sparkling='sparkling_dark.png', 
@@ -29,10 +25,9 @@ icon_paths = dict(red='red_dark.png',
                    map_img='map_dark.png',
                    grapes='varietal_dark.png')
 
-
-app = create_dash_app(cellar_dict, webhook_settings=webhook_settings,
-                      assets_folder=assets_folder, stylesheets=stylesheets,
-                      logo_path=logo_path, icon_paths=icon_paths)
-
+app = create_dash_app(cellar_dict, webhook_settings=webhook_settings, icon_paths=icon_paths)
 server = app.server
-app.run_server(debug=True)
+
+
+if __name__ == '__main__':
+    app.run_server(debug=True)
