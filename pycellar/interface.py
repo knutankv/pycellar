@@ -13,7 +13,9 @@ import os
 def get_wine_types_from_dict(wine_types):
     return [wine_type for wine_type in wine_types if wine_types[wine_type]]
 
-def create_dash_app(cellar, webhook_settings=None, icon_paths=None, assets_folder='./assets/'):
+def create_dash_app(cellar, webhook_settings=None, 
+                    icon_paths=None, assets_folder='./assets/',
+                    table_columns=None):
     
     def filter_cellar(filter_dict):
         def all_filters(wine):    
@@ -70,9 +72,11 @@ def create_dash_app(cellar, webhook_settings=None, icon_paths=None, assets_folde
     if type(cellar) is dict:
         cellar_dict = dict(cellar)
         cellar = winelib.Cellar.from_cellartracker_inventory(cellar_dict['username'], password=cellar_dict['password'])
-
-    keys = ['wine','vintage', 'region','type', 'bottles', 'bin']
     
+    if table_columns is None:
+        keys = ['wine','vintage','bottles']
+    else:
+        keys = table_columns
     
     # Establish options
     ok_consume = True
