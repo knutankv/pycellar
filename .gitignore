@@ -6,3 +6,4 @@ _static
 _templates
 build
 pycellar.egg-info
+__pycache__
