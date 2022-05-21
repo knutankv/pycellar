@@ -5,7 +5,7 @@ with open("README.rst", "r") as fh:
 
 setuptools.setup(
     name="pycellar",
-    version="0.1.2",
+    version="0.1.3",
     author="Knut Andreas Kvåle",
     author_email="knut.a.kvale@gmail.com",
     description="Python wine cellar library management",
