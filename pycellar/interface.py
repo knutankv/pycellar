@@ -133,10 +133,8 @@ def create_dash_app(cellar, webhook_settings=None,
                 html.Div(className='wine_table_container', children=[       
                     dash_table.DataTable(data=data, 
                                           columns=columns, 
-                                          id='wine_table', page_size=10, 
-                                          style_cell={'textAlign': 'left'}, 
-                                          style_table={'width': '100%'}, 
-                                          fill_width=False,
+                                          id='wine_table', page_size=6, 
+                                          style_cell={'textAlign': 'left'},
                         style_header={
                               'backgroundColor': '#222222',
                               'color': 'white'
