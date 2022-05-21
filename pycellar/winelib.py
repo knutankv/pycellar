@@ -53,7 +53,7 @@ class Cellar:
     
     @property
     def unique_wines(self):
-        wines = self.wine
+        wines = self.wines
         unique_wines = []
         for wine in wines:
             if wine not in unique_wines:
@@ -121,6 +121,16 @@ class Cellar:
         return self.filter_wines(fun)
     
 
+    def get_wine(self, iwine):
+        wine = [wine for wine in self.wines if wine.iwine == iwine]
+        if len(wine) == 0:
+            wine = None
+        else:
+            wine = wine[0]
+        
+        return wine
+    
+        
     def wines_from_barcode(self, barcode, unique=False):
         barcodes = [wine.barcode for wine in self.wines]
         

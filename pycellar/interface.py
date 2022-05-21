@@ -17,7 +17,17 @@ def create_dash_app(cellar, webhook_settings=None,
                     icon_paths=None, assets_folder='./assets/',
                     table_columns=None):
     
-    def filter_cellar(filter_dict):
+
+    def get_sel_wine_bin_and_ix(row):
+        wine = cellar.unique_filt_wines[row]
+
+        return wine.bin, wine.iwine
+    
+    def get_winetable_columns(df, omit=['id']):
+        columns = [{"name": i.capitalize(), "id": i} for i in df.columns if i not in omit]
+        return columns
+    
+    def get_df(cellar, filter_dict):
         def all_filters(wine):    
             vintage_range = filter_dict['vintage_range']
             ok_consume = filter_dict['ok_consume']
@@ -35,23 +45,10 @@ def create_dash_app(cellar, webhook_settings=None,
             return ok
         
         cellar.filter_wines(all_filters)
-    
-    def get_sel_wine_bin_and_ix(row):
-        wine = cellar.unique_filt_wines[row]
-
-        return wine.bin, wine.iwine
-        
-    def get_winetable_data(filter_dict, output_columns=False, omit=['id']):
-        filter_cellar(filter_dict)
         df = cellar.to_df()[keys]
         df['id'] = df.index
-        data = df.to_dict('records') 
         
-        if output_columns:
-            columns = [{"name": i.capitalize(), "id": i} for i in df.columns if i not in omit]
-            return data, columns
-        else: 
-            return data
+        return df
     
     app = dash.Dash(__name__, assets_folder=assets_folder)
     app.css.config.serve_locally = True
@@ -68,7 +65,7 @@ def create_dash_app(cellar, webhook_settings=None,
         scene_activator = lambda x: 0
         scene_activator_random = lambda x: 0
     
-    
+        
     if type(cellar) is dict:
         cellar_dict = dict(cellar)
         cellar = winelib.Cellar.from_cellartracker_inventory(cellar_dict['username'], password=cellar_dict['password'])
@@ -95,8 +92,10 @@ def create_dash_app(cellar, webhook_settings=None,
     vintage_range = [-np.inf, np.inf]
     filter_dict = dict(wine_types=get_wine_types_from_dict(wine_dict), vintage_range=vintage_range, country=None, varietal=None, ok_consume=ok_consume)
     
-    data, columns = get_winetable_data(filter_dict, output_columns=True)
-
+    df = get_df(cellar, filter_dict)
+    data = df.to_dict('records')
+    columns = get_winetable_columns(df)
+   
    
     # ------------ LAYOUT ------------
     app.layout = html.Div(className='main', children=
@@ -154,7 +153,8 @@ def create_dash_app(cellar, webhook_settings=None,
                 html.Img(id='lights1', className='lights-icon', src=app.get_asset_url(icon_paths['lights1'])),
                 html.Img(id='lights2',  className='lights-icon', src=app.get_asset_url(icon_paths['lights2'])),
              
-            ])
+            ]),
+            html.H3(' ', id='bin_text')
         ])
     
 
@@ -211,7 +211,7 @@ def create_dash_app(cellar, webhook_settings=None,
         filter_dict['country'] = country
         filter_dict['varietal'] = varietal
         
-        data = get_winetable_data(filter_dict)
+        data = get_df(cellar, filter_dict).to_dict('records')
         scene_activator('reset_cellar')
 
         return data, *styles, None
@@ -243,28 +243,31 @@ def create_dash_app(cellar, webhook_settings=None,
         scene_activator('lights2') 
 
     @app.callback(
-    Output("wine_table", "style_data_conditional"),
-    [Input("wine_table", "active_cell"),
+    [Output("wine_table", "style_data_conditional"), Output("bin_text", "children")],
+    [Input("wine_table", "active_cell"),Input("wine_table", "data"),
      State("lights1", "n_clicks"), State("lights2", "n_clicks"),
      State("lights_off", "n_clicks")]
     )
     
-    def sel_wine(active_cell,*args):
+    def sel_wine(active_cell, data, *args):
         
         if active_cell is None:                                                                                                                                                                                                                      
             val = [
                 
             ]  
             scene_activator('reset_cellar')
+            text_out = ''
         else:
-            row = active_cell['row']
-            sel_bin, iwine = get_sel_wine_bin_and_ix(row)
-            scene_activator(sel_bin)
+            iwine = active_cell['row_id']
+            wine = cellar.get_wine(iwine)
+            text_out = f'{wine.wine}: {wine.bin}'
+            
+            scene_activator(wine.bin)
             val = [{
                 "if": {"row_index": active_cell.get("row", "")}, 
                   "backgroundColor": "#64889c"}
             ]   
             
-        return val
+        return val, text_out
 
     return app
