@@ -118,7 +118,7 @@ def create_dash_app(cellar, webhook_settings=None, icon_paths=None, assets_folde
                         multi=False,
                         value=None)]),
                 html.Div(className='iconed_list', children=[  
-                    html.Img(className='icon', src=icon_paths['grapes']),
+                    html.Img(className='icon', src=app.get_asset_url(icon_paths['grapes'])),
                     dcc.Dropdown(
                         options=varietals_dashdict,
                         id='varietals', 
