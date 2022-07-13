@@ -9,6 +9,13 @@ from pycellar import winelib, lights
 from datetime import date
 from flask import send_from_directory
 import os
+import json
+
+def zerofy_dict(d):
+    dzero = {key:0 for key in d if d[key] is None}
+    d.update(dzero)
+    
+    return d
 
 def get_wine_types_from_dict(wine_types):
     return [wine_type for wine_type in wine_types if wine_types[wine_type]]
@@ -77,7 +84,7 @@ def create_dash_app(cellar, webhook_settings=None,
     
     # Establish options
     ok_consume = True
-    wine_dict = {'red':1, 'white':1, 'rosé':1, 'sparkling':1, 'dessert': 0}
+    wine_dict = {'red':1, 'white':1, 'rosé':1, 'sparkling':1, 'dessert': 1}
     
     varietals = set(cellar.get_props('varietal'))
     varietals_dashdict = [{'label': var, 
@@ -133,7 +140,7 @@ def create_dash_app(cellar, webhook_settings=None,
                     dash_table.DataTable(data=data, 
                                           columns=columns, 
                                           id='wine_table', page_size=6, 
-                                          style_cell={'textAlign': 'left'},
+                                          style_cell={'textAlign': 'left', 'color': 'white'},
                         style_header={
                               'backgroundColor': '#222222',
                               'color': 'white'
@@ -154,7 +161,11 @@ def create_dash_app(cellar, webhook_settings=None,
                 html.Img(id='lights2',  className='lights-icon', src=app.get_asset_url(icon_paths['lights2'])),
              
             ]),
-            html.H3(' ', id='bin_text')
+            html.H3(' ', id='bin_text'),
+            dcc.Store(data={"red": 0, "white":0, "rosé":0, "sparkling":0, "dessert":0}, 
+                     id='clicks'),
+            dcc.Store(data=wine_dict, 
+                     id='active')
         ])
     
 
@@ -166,7 +177,9 @@ def create_dash_app(cellar, webhook_settings=None,
          Output("sparkling_type", "style"),
          Output("dessert_type", "style"),
          Output("ok_consume", "style"),
-         Output("wine_table", "active_cell")],
+         Output("wine_table", "active_cell"),
+         Output("clicks", "data"),
+         Output("active", "data")],
         [Input("vintages", "value"),
          Input("countries", "value"),
          Input("varietals", "value"),
@@ -175,27 +188,43 @@ def create_dash_app(cellar, webhook_settings=None,
          Input("rose_type", "n_clicks"),
          Input("sparkling_type", "n_clicks"),
          Input("dessert_type", "n_clicks"),
-         Input("ok_consume", "n_clicks")
+         Input("ok_consume", "n_clicks"),
+         Input("clicks", "data"),
+         Input("active", "data")
          ])
     
-    def update_table(vintage_range, country, varietal, n_red, n_white, n_rose, n_sparkling,n_dessert,
-                     n_ok_consume):
-
-        n_clicks = dict(red=n_red, white=n_white, rosé=n_rose, sparkling=n_sparkling, dessert=n_dessert)
-        styles = []
+    def update_table(vintage_range, country, varietal,
+                     n_red, n_white, n_rose, n_sparkling, n_dessert, n_ok_consume,
+                     all_clicks, all_active):
+        
+        order_output = ['red', 'white', 'rosé', 'sparkling', 'dessert']
+        
+        n_clicks = {'red':n_red,
+                    'white':n_white, 
+                    'rosé':n_rose,
+                    'sparkling':n_sparkling, 
+                    'dessert':n_dessert}
+        
+        n_clicks = zerofy_dict(n_clicks)
+        styles = [{'opacity': all_active[wt]} for wt in all_active]
+        all_is_active = all(all_active.values())
         
         # Establish click values for wine type icons
-        for wine_type in ['red','white','rosé','sparkling', 'dessert']:
-            n = n_clicks[wine_type]
+        for wine_type in all_clicks:
+            if n_clicks[wine_type] > all_clicks[wine_type]:
+                all_clicks[wine_type] = n_clicks[wine_type]
+                if all_active[wine_type] == 1 and not all_is_active:
+                    all_active = {wt: 1 for wt in order_output}
+                    styles = [{'opacity': 1.0}] * len(order_output)
+                else:
+                    all_active = {wt: 0 for wt in order_output}
+                    all_active[wine_type] = 1
+                    styles = [{'opacity': 0.3}] * len(order_output)
+                    styles[order_output.index(wine_type)] = {'opacity': 1}
+
+                break
             
-            if n is not None and n % 2 >0:     #odd number
-                styles.append({'opacity': 0.3})
-                wine_dict[wine_type] = 0
-            else:
-                styles.append({'opacity': 1.0})
-                wine_dict[wine_type] = 1
                 
-        
         if n_ok_consume is not None and n_ok_consume % 2 > 0:     #odd number
             styles.append({'opacity': 1.0})
             filter_dict['ok_consume'] = True
@@ -203,8 +232,9 @@ def create_dash_app(cellar, webhook_settings=None,
             styles.append({'opacity': 0.3})
             filter_dict['ok_consume'] = False
             
-        filter_dict['wine_types'] = get_wine_types_from_dict(wine_dict)
+        filter_dict['wine_types'] = get_wine_types_from_dict(all_active)
         filter_dict['vintage_range'] = vintage_range
+        
         if country is not None:
             country = country.lower()
     
@@ -214,7 +244,7 @@ def create_dash_app(cellar, webhook_settings=None,
         data = get_df(cellar, filter_dict).to_dict('records')
         scene_activator('reset_cellar')
 
-        return data, *styles, None
+        return data, *styles, None, all_clicks, all_active
     
 
     @app.callback(
