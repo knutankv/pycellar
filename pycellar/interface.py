@@ -21,8 +21,7 @@ def get_wine_types_from_dict(wine_types):
     return [wine_type for wine_type in wine_types if wine_types[wine_type]]
 
 def create_dash_app(cellar, webhook_settings=None, 
-                    icon_paths=None, assets_folder='./assets/',
-                    table_columns=None):
+                    icon_paths=None, table_columns=None, **kwargs):
     
 
     def get_sel_wine_bin_and_ix(row):
@@ -57,7 +56,7 @@ def create_dash_app(cellar, webhook_settings=None,
         
         return df
     
-    app = dash.Dash(__name__, assets_folder=assets_folder)
+    app = dash.Dash(__name__, **kwargs)
     app.css.config.serve_locally = True
     app.scripts.config.serve_locally = True
     
@@ -115,7 +114,7 @@ def create_dash_app(cellar, webhook_settings=None,
                     html.Img(id='dessert_type', className='icon', src=app.get_asset_url(icon_paths['dessert']))
                 ]),
                
-                dcc.RangeSlider(min=2000, max=date.today().year, value=[2000, 2025],
+                dcc.RangeSlider(min=2000, max=date.today().year, step=1, value=[2000, 2025],
                                 id='vintages', tooltip={"placement": "bottom", "always_visible": True}),
                 html.Img(id='ok_consume',className='icon', src=app.get_asset_url(icon_paths['ok_consume'])),
                 # html.Img(id='random_pick',className='icon', src=app.get_asset_url(icon_paths['random'])),
