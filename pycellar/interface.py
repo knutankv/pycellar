@@ -1,15 +1,12 @@
 import dash
-from dash import dash_table
+from dash import dash_table, html
 from dash.dependencies import Output, Input, State
-import dash_core_components as dcc
-import dash_html_components as html
+from dash import dcc
 
 import numpy as np
 from pycellar import winelib, lights
 from datetime import date
-from flask import send_from_directory
-import os
-import json
+
 
 def zerofy_dict(d):
     dzero = {key:0 for key in d if d[key] is None}
@@ -57,9 +54,9 @@ def create_dash_app(cellar, webhook_settings=None,
         return df
     
     app = dash.Dash(__name__, **kwargs)
-    app.css.config.serve_locally = True
-    app.scripts.config.serve_locally = True
-    
+    # app.css.config.serve_locally = True
+    # app.scripts.config.serve_locally = True
+
     if webhook_settings:
         scene_activator = lights.homey_activator(**webhook_settings['normal'])
         if 'random' in webhook_settings:
@@ -69,9 +66,8 @@ def create_dash_app(cellar, webhook_settings=None,
     else:
         webhook_settings = webhook_settings['normal']
         scene_activator = lambda x: 0
-        scene_activator_random = lambda x: 0
+        # scene_activator_random = lambda x: 0
     
-        
     if type(cellar) is dict:
         cellar_dict = dict(cellar)
         cellar = winelib.Cellar.from_cellartracker_inventory(cellar_dict['username'], password=cellar_dict['password'])
@@ -102,32 +98,31 @@ def create_dash_app(cellar, webhook_settings=None,
     data = df.to_dict('records')
     columns = get_winetable_columns(df)
    
-   
     # ------------ LAYOUT ------------
     app.layout = html.Div(className='main', children=
         [html.Div(className='filters', children=[
                 html.Div(id='winetypes', children=[
-                    html.Img(id='red_type',className='icon', src=app.get_asset_url(icon_paths['red'])),
-                    html.Img(id='white_type', className='icon', src=app.get_asset_url(icon_paths['white'])),
-                    html.Img(id='rose_type',  className='icon', src=app.get_asset_url(icon_paths['rose'])),
-                    html.Img(id='sparkling_type', className='icon', src=app.get_asset_url(icon_paths['sparkling'])),
-                    html.Img(id='dessert_type', className='icon', src=app.get_asset_url(icon_paths['dessert']))
+                    html.Img(src=dash.get_asset_url(icon_paths['red']), id='red_type',className='icon'),
+                    html.Img(id='white_type', className='icon', src=dash.get_asset_url(icon_paths['white'])),
+                    html.Img(id='rose_type',  className='icon', src=dash.get_asset_url(icon_paths['rose'])),
+                    html.Img(id='sparkling_type', className='icon', src=dash.get_asset_url(icon_paths['sparkling'])),
+                    html.Img(id='dessert_type', className='icon', src=dash.get_asset_url(icon_paths['dessert']))
                 ]),
                
                 dcc.RangeSlider(min=2000, max=date.today().year, step=1, value=[2000, 2025],
                                 id='vintages', tooltip={"placement": "bottom", "always_visible": True}),
-                html.Img(id='ok_consume',className='icon', src=app.get_asset_url(icon_paths['ok_consume'])),
-                # html.Img(id='random_pick',className='icon', src=app.get_asset_url(icon_paths['random'])),
+                html.Img(id='ok_consume',className='icon', src=dash.get_asset_url(icon_paths['ok_consume'])),
+                html.Img(id='random_pick',className='icon', src=app.get_asset_url(icon_paths['random'])),
                 
                 html.Div(className='iconed_list', children=[
-                    html.Img(className='icon', src=app.get_asset_url(icon_paths['map_img'])),
+                    html.Img(className='icon', src=dash.get_asset_url(icon_paths['map_img'])),
                     dcc.Dropdown(
                         options=countries_dashdict,
                         id='countries', 
                         multi=False,
                         value=None)]),
                 html.Div(className='iconed_list', children=[  
-                    html.Img(className='icon', src=app.get_asset_url(icon_paths['grapes'])),
+                    html.Img(className='icon', src=dash.get_asset_url(icon_paths['grapes'])),
                     dcc.Dropdown(
                         options=varietals_dashdict,
                         id='varietals', 
@@ -157,9 +152,9 @@ def create_dash_app(cellar, webhook_settings=None,
                     )]),
             html.Br(),
             html.Div(id='light_controls', children=[
-                html.Img(id='lights_off',className='lights-icon', src=app.get_asset_url(icon_paths['lights_off'])),
-                html.Img(id='lights1', className='lights-icon', src=app.get_asset_url(icon_paths['lights1'])),
-                html.Img(id='lights2',  className='lights-icon', src=app.get_asset_url(icon_paths['lights2'])),
+                html.Img(id='lights_off',className='lights-icon', src=dash.get_asset_url(icon_paths['lights_off'])),
+                html.Img(id='lights1', className='lights-icon', src=dash.get_asset_url(icon_paths['lights1'])),
+                html.Img(id='lights2',  className='lights-icon', src=dash.get_asset_url(icon_paths['lights2'])),
              
             ]),
             html.H3(' ', id='bin_text'),
