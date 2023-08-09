@@ -42,7 +42,7 @@ def create_dash_app(nm, cellar, webhook_settings=None,
             country = filter_dict['country']
             varietal = filter_dict['varietal']
             
-            vintage_ok = wine.in_range('vintage', vintage_range)
+            vintage_ok = wine.in_range('_vintage', vintage_range)
             consumable_ok = wine.is_consumable() or ~ok_consume
             type_ok = np.any([wt in wine.type.lower() for wt in wine_types])
             country_ok = country is None or (wine.country.lower() == country)
