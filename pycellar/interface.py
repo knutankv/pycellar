@@ -3,6 +3,10 @@ from dash import dash_table, html
 from dash.dependencies import Output, Input, State
 from dash import dcc
 
+import datetime
+today = datetime.date.today()
+year = today.year
+
 import numpy as np
 from pycellar import winelib, lights
 from datetime import date
@@ -17,8 +21,8 @@ def zerofy_dict(d):
 def get_wine_types_from_dict(wine_types):
     return [wine_type for wine_type in wine_types if wine_types[wine_type]]
 
-def create_dash_app(cellar, webhook_settings=None, 
-                    icon_paths=None, table_columns=None, **kwargs):
+def create_dash_app(nm, cellar, webhook_settings=None, 
+                    icon_paths=None, table_columns=None, list_inventory=True, **kwargs):
     
 
     def get_sel_wine_bin_and_ix(row):
@@ -53,9 +57,8 @@ def create_dash_app(cellar, webhook_settings=None,
         
         return df
     
-    app = dash.Dash(__name__, **kwargs)
-    # app.css.config.serve_locally = True
-    # app.scripts.config.serve_locally = True
+    app = dash.Dash(nm, **kwargs)
+
 
     if webhook_settings:
         scene_activator = lights.homey_activator(**webhook_settings['normal'])
@@ -66,7 +69,6 @@ def create_dash_app(cellar, webhook_settings=None,
     else:
         webhook_settings = webhook_settings['normal']
         scene_activator = lambda x: 0
-        # scene_activator_random = lambda x: 0
     
     if type(cellar) is dict:
         cellar_dict = dict(cellar)
@@ -92,7 +94,8 @@ def create_dash_app(cellar, webhook_settings=None,
     
     
     vintage_range = [-np.inf, np.inf]
-    filter_dict = dict(wine_types=get_wine_types_from_dict(wine_dict), vintage_range=vintage_range, country=None, varietal=None, ok_consume=ok_consume)
+    filter_dict = dict(wine_types=get_wine_types_from_dict(wine_dict), 
+                       vintage_range=vintage_range, country=None, varietal=None, ok_consume=ok_consume)
     
     df = get_df(cellar, filter_dict)
     data = df.to_dict('records')
@@ -109,10 +112,10 @@ def create_dash_app(cellar, webhook_settings=None,
                     html.Img(id='dessert_type', className='icon', src=dash.get_asset_url(icon_paths['dessert']))
                 ]),
                
-                dcc.RangeSlider(min=2000, max=date.today().year, step=1, value=[2000, 2025],
+                dcc.RangeSlider(min=year-20, max=year, step=1, marks={i: '{}'.format(i) for i in range(year-20,year+1,2)},
                                 id='vintages', tooltip={"placement": "bottom", "always_visible": True}),
                 html.Img(id='ok_consume',className='icon', src=dash.get_asset_url(icon_paths['ok_consume'])),
-                html.Img(id='random_pick',className='icon', src=app.get_asset_url(icon_paths['random'])),
+                # html.Img(id='random_pick',className='icon', src=app.get_asset_url(icon_paths['random'])),
                 
                 html.Div(className='iconed_list', children=[
                     html.Img(className='icon', src=dash.get_asset_url(icon_paths['map_img'])),
@@ -157,6 +160,7 @@ def create_dash_app(cellar, webhook_settings=None,
                 html.Img(id='lights2',  className='lights-icon', src=dash.get_asset_url(icon_paths['lights2'])),
              
             ]),
+            html.Div(children=[html.H2(f'# {len(cellar.wines)}')]),
             html.H3(' ', id='bin_text'),
             dcc.Store(data={"red": 0, "white":0, "rosé":0, "sparkling":0, "dessert":0}, 
                      id='clicks'),

@@ -196,6 +196,20 @@ class Wine:
     def med_name(self):
         return f'{self.vintage} {self.producer} {self.appellation}'
     
+    @property
+    def vintage(self):
+        if self._vintage == '1001':
+            return 'NV'
+        else:
+            return self._vintage
+        
+            
+    
+    @vintage.setter
+    def vintage(self, val):
+        self._vintage = val 
+        
+    
     
     def __repr__(self):
         return self.full_name

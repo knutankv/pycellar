@@ -1,12 +1,15 @@
 from pycellar.interface import create_dash_app
+
 import os
+from flask import send_from_directory
+
+
 
 username = os.environ['cellartracker_user']
 password = os.environ['cellartracker_pwd']
 homey_id = os.environ['homey_id']
 
 cellar_dict = dict(username=username, password=password)
-
 webhook_settings = {'normal': dict(homey_id=homey_id,
                       event='finnvin'),
                     'random':dict(homey_id=homey_id,
@@ -25,9 +28,11 @@ icon_paths = dict(red='red_dark.png',
                    map_img='map_dark.png',
                    grapes='varietal_dark.png')
 
-app = create_dash_app(cellar_dict, webhook_settings=webhook_settings, icon_paths=icon_paths)
+app = create_dash_app(__name__, cellar_dict, webhook_settings=webhook_settings, 
+                      icon_paths=icon_paths)
+
 server = app.server
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=True) 
