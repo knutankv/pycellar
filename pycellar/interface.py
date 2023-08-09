@@ -34,7 +34,10 @@ def create_dash_app(nm, cellar, webhook_settings=None,
         columns = [{"name": i.capitalize(), "id": i} for i in df.columns if i not in omit]
         return columns
     
-    def get_df(cellar, filter_dict):
+    def get_df(cellar, filter_dict, sel_keys=None):
+        if sel_keys is None:
+            sel_keys = keys*1
+            
         def all_filters(wine):    
             vintage_range = filter_dict['vintage_range']
             ok_consume = filter_dict['ok_consume']
@@ -52,7 +55,7 @@ def create_dash_app(nm, cellar, webhook_settings=None,
             return ok
         
         cellar.filter_wines(all_filters)
-        df = cellar.to_df()[keys]
+        df = cellar.to_df()[sel_keys]
         df['id'] = df.index
         
         return df
@@ -115,8 +118,7 @@ def create_dash_app(nm, cellar, webhook_settings=None,
                 dcc.RangeSlider(min=year-20, max=year, step=1, marks={i: '{}'.format(i) for i in range(year-20,year+1,2)},
                                 id='vintages', tooltip={"placement": "bottom", "always_visible": True}),
                 html.Img(id='ok_consume',className='icon', src=dash.get_asset_url(icon_paths['ok_consume'])),
-                # html.Img(id='random_pick',className='icon', src=app.get_asset_url(icon_paths['random'])),
-                
+
                 html.Div(className='iconed_list', children=[
                     html.Img(className='icon', src=dash.get_asset_url(icon_paths['map_img'])),
                     dcc.Dropdown(
@@ -171,6 +173,8 @@ def create_dash_app(nm, cellar, webhook_settings=None,
 
     @app.callback(
         [Output("wine_table", "data"),
+         Output("countries", "options"),
+         Output("varietals", "options"),
          Output("red_type", "style"),
          Output("white_type", "style"),
          Output("rose_type", "style"),
@@ -240,11 +244,23 @@ def create_dash_app(nm, cellar, webhook_settings=None,
     
         filter_dict['country'] = country
         filter_dict['varietal'] = varietal
+
+        data_full = get_df(cellar, filter_dict, sel_keys=keys)
+        # df_add = data_full[['varietal']]
+
+        data = data_full.to_dict('records')
         
-        data = get_df(cellar, filter_dict).to_dict('records')
+        # varietals = set(df_add['varietal'].values)
+        # varietals_dashdict = [{'label': var, 
+        #          'value': var} for var in varietals]
+            
+        # countries = set(df_add['region'].values)
+        # countries_dashdict = [{'label': reg, 
+                 # 'value': reg} for reg in countries]
+        
         scene_activator('reset_cellar')
 
-        return data, *styles, None, all_clicks, all_active
+        return data, countries_dashdict, varietals_dashdict, *styles, None, all_clicks, all_active
     
 
     @app.callback(
