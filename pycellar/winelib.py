@@ -262,8 +262,3 @@ def convert_bin_to_coordinates(this_bin):
     column = ord(column) - 96
     
     return row, column
-
-username = 'knut.a.kvale@gmail.com'
-password = 'minvin'
-
-test = get_cellartracker_inventory(username, password=password)
