@@ -244,8 +244,13 @@ class Wine:
             return np.min(r)<=np.float(getattr(self, key))<=np.max(r)
         except:
             return if_invalid_return
+    @property
+    def consume_string(self):
+        if hasattr(self, 'beginconsume') and hasattr(self, 'endconsume'):
+            return f'{self.beginconsume}-{self.endconsume}'
+        else:
+            return 'N/A'
         
-
 def get_cellartracker_inventory(username, password=None):
     if password is None:
         password = getpass('Password: ')
